@@ -5,11 +5,14 @@ import ErrorHandler from "../utils/errorHandler.js";
 import { sendEmail } from "../utils/sendEmail.js";
 import crypto from "crypto";
 import { Course } from "../models/Course.js";
+import getDataUri from '../utils/dataUri.js'
+import cloudinary from "cloudinary";
 
 export const register = catchAsyncError(async (req, res, next) => {
   const { name, email, password } = req.body;
-  // const file=req.file
-  if (!name || !email || !password) {
+  const file = req.file;
+
+  if (!name || !email || !password ||!file) {
     return next(new ErrorHandler("Please enter all fields", 400));
   }
   let user = await User.findOne({ email });
@@ -17,13 +20,17 @@ export const register = catchAsyncError(async (req, res, next) => {
     return next(new ErrorHandler("User already exists ", 409));
   }
   // upload file on cloudinary
+ 
+  const fileUri = getDataUri(file);
+  const mycloud = await cloudinary.v2.uploader.upload(fileUri.content);
+
   user = await User.create({
     name,
     email,
     password,
     avatar: {
-      public_id: "tempurl",
-      url: "tempurl",
+      public_id: mycloud.public_id,
+      url: mycloud.secure_url,
     },
   });
   //   res.status(201).json({message:"User registered successfully."})
@@ -119,7 +126,18 @@ export const updateProfile = catchAsyncError(async (req, res, next) => {
 // update profile picture
 
 export const updateProfilePicture = catchAsyncError(async (req, res, next) => {
-  console.log("update profile picture");
+  const user = await User.findById(req.user._id);
+  const file = req.file;
+  const fileUri = getDataUri(file);
+  const mycloud = await cloudinary.v2.uploader.upload(fileUri.content);
+  await cloudinary.v2.uploader.destroy(user.avatar.public_id); //previous one deleted
+
+  user.avatar = {
+    public_id: mycloud.public_id,
+    url: mycloud.secure_url,
+  };
+  await user.save();
+
   res.status(200).json({
     success: true,
     message: "Profile picture updated successfully 🚀",
@@ -189,7 +207,7 @@ export const addToPlaylist = catchAsyncError(async (req, res, next) => {
   if (!course) {
     return next(new ErrorHandler("Invalid course id", 404));
   }
-  
+
   // if playlist is alaready created then we do not create it again
   const itemExist = user.playlist.find((item) => {
     if (item.course.toString() === course._id.toString()) {
@@ -209,7 +227,6 @@ export const addToPlaylist = catchAsyncError(async (req, res, next) => {
   });
   await user.save();
 
-
   res.status(200).json({
     success: true,
     message: "Course added to playlist 🎉",
@@ -224,20 +241,27 @@ export const removeFromPlaylist = catchAsyncError(async (req, res, next) => {
   if (!course) {
     return next(new ErrorHandler("Invalid course id", 404));
   }
-  
-  const newPlaylist=user.playlist.filter(item=>{
-    if(item.course.toString()!==course._id.toString()){
-      return true; 
-    }
-  })
 
-  user.playlist=newPlaylist;
+  const newPlaylist = user.playlist.filter((item) => {
+    if (item.course.toString() !== course._id.toString()) {
+      return true;
+    }
+  });
+
+  user.playlist = newPlaylist;
 
   await user.save();
-
 
   res.status(200).json({
     success: true,
     message: "Removed from the playlist 👍",
   });
 });
+
+
+
+
+//admin routes
+export const getAllUsers=catchAsyncError(async(req,res,next)=>{
+  console.log('bhaiya ji')
+})
