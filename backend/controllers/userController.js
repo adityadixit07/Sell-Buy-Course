@@ -276,7 +276,7 @@ export const updateUserRole = catchAsyncError(async (req, res, next) => {
   if (!user) {
     return next(new ErrorHandler("No user found", 404));
   }
-  if (user.role === "user") {
+  if (user.role==='user') {
     user.role = "admin";
   } else {
     user.role = "user";
@@ -331,3 +331,6 @@ export const deleteMyProfile = catchAsyncError(async (req, res, next) => {
       message: "user deleted successfully🚀",
     });
 });
+
+
+
