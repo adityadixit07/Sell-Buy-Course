@@ -22,7 +22,7 @@ const schema = new mongoose.Schema({
         type: String,
         required: true,
       },
-      videos: {
+      video: {
         public_id: {
           type: String,
           required: true,

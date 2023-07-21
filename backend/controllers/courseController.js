@@ -7,8 +7,23 @@ import cloudinary from "cloudinary";
 
 // get all courses without lectures
 export const getAllCoures = catchAsyncError(async (req, res, next) => {
-  const courses = await Course.find().select("-lectures");
-  res.status(200).json({ success: true, courses });
+  const keyword = req.query.keyword || "";
+  const category = req.query.category || "";
+  const courses = await Course.find({
+    title: {
+      $regex: keyword,
+      $options: "i",
+    },
+    category:{
+      $regex: category,
+      $options: "i",
+    }
+  }).select("-lectures");
+
+  res.status(200).json({ 
+    success: true, 
+    courses ,
+  });
 });
 
 // -----------------------course created -> only admin--------------
@@ -83,7 +98,7 @@ export const addLecture = catchAsyncError(async (req, res, next) => {
   });
 
   course.numOfVideos = course.lectures.length;
-  
+
   const lecId = course.lectures.id;
   console.log(lecId);
 
@@ -119,15 +134,13 @@ export const deleteCourse = catchAsyncError(async (req, res, next) => {
     });
   }
 
- await course.deleteOne(); //this will remove the course
+  await course.deleteOne(); //this will remove the course
 
   res.status(200).json({
     success: true,
     message: "course deleted successfully 🎉",
   });
 });
-
-
 
 // its time to delete the lectures
 
@@ -161,7 +174,6 @@ export const deleteLectures = catchAsyncError(async (req, res, next) => {
     message: "Lecture deleted successfully",
   });
 });
-
 
 // Course.watch().on("change",async()=>{
 //   const stats = await Stats.find({}).sort({ createdAt: "desc" }).limit(1);
