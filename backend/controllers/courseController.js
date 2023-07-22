@@ -35,7 +35,7 @@ export const createCourse = catchAsyncError(async (req, res, next) => {
   }
   // upload file
   const file = req.file;
-  console.log(file)
+  // console.log(file)
   const fileUri = getDataUri(file);
   //  console.log(fileUri.content)
   const mycloud = await cloudinary.v2.uploader.upload(fileUri.content);
@@ -81,7 +81,7 @@ export const addLecture = catchAsyncError(async (req, res, next) => {
   if (!course) {
     return next(new ErrorHandler("Course not found!", 404));
   }
-  // upload file on cloudinary
+  // uploading file on cloudinary
   const file = req.file;
   const fileUri = getDataUri(file);
   const mycloud = await cloudinary.v2.uploader.upload(fileUri.content, {
@@ -97,6 +97,7 @@ export const addLecture = catchAsyncError(async (req, res, next) => {
     },
   });
 
+  // every time we increase the length of videos so that we get the correct number
   course.numOfVideos = course.lectures.length;
 
   const lecId = course.lectures.id;
@@ -106,7 +107,7 @@ export const addLecture = catchAsyncError(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    message: "lectures added in course successfully🎉",
+    message: "Lectures added in course successfully🎉",
   });
 });
 
@@ -171,7 +172,7 @@ export const deleteLectures = catchAsyncError(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    message: "Lecture deleted successfully",
+    message: "Lecture deleted successfully 😎",
   });
 });
 
