@@ -35,7 +35,7 @@ export const createCourse = catchAsyncError(async (req, res, next) => {
   }
   // upload file
   const file = req.file;
-  // console.log(file)
+  console.log(file)
   const fileUri = getDataUri(file);
   //  console.log(fileUri.content)
   const mycloud = await cloudinary.v2.uploader.upload(fileUri.content);
