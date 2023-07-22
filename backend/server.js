@@ -18,7 +18,7 @@ export const instance = new Razorpay({
 });
 
 // scheduling and creatign stat at every month
-nodecron.schedule("0 0 * * *", async () => {
+nodecron.schedule("0 0 0 1 * *", async () => {
   try {
     await Stats.create({});
   } catch (err) {
