@@ -8,16 +8,25 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
+import {login} from '../../redux/actions/userAction';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  
+  const dispatch=useDispatch();
+  const submitHandler=(e)=>{
+    e.preventDefault();
+    // console.log(email,password);
+    dispatch(login(email,password))
+  }
   return (
     <Container h={'95vh'}>
       <VStack justifyContent={'center'} spacing={'10'} h={'full'}>
         <Heading children="Welcome to Course Bundler" />
-        <form style={{ width: '100%' }}>
+        <form onSubmit={submitHandler} style={{ width: '100%' }}>
           <Box marginY={'4'}>
             <FormLabel htmlFor="email" children="Email Address" />
             <Input
