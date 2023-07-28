@@ -21,6 +21,7 @@ app.use(
 );
 app.use(cookieParser());
 
+app.use(cors());
 app.use(
   cors({
     origin: process.env.FRONTEND_URL,
@@ -42,5 +43,7 @@ app.get("/", (req, res) =>
     `<h1> Server is Working. Click <a href=${process.env.FRONTEND_URL}>Here</a> to visit frontend.  </h1>`
   )
 );
+
+
 
 app.use(ErrorMiddware);
